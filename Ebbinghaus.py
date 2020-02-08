@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import xlwt
-import argvsparser
+import argvsparser as parser
 
 
 def parseDays(value, type):
@@ -84,24 +84,23 @@ class Stage(object):
 
 if __name__ == "__main__":
     ebbinghaus = Ebbinghaus([
-                        Stage(5, "M"),
-                        Stage(30, "M"),
-                        Stage(12, "H"),
-                        Stage(1, "d"),
-                        Stage(2, "d"),
-                        Stage(4, "d"),
-                        Stage(7, "d"),
-                        Stage(15, "d"),
-                        Stage(1, "m"),
-                        Stage(3, "m"),
-                        Stage(6, "m")
-                 ])
+        Stage(5, "M"),
+        Stage(30, "M"),
+        Stage(12, "H"),
+        Stage(1, "d"),
+        Stage(2, "d"),
+        Stage(4, "d"),
+        Stage(7, "d"),
+        Stage(15, "d"),
+        Stage(1, "m"),
+        Stage(3, "m"),
+        Stage(6, "m")])
 
-    dt = datetime.today()
-    d = argvsparser.parse_func('-d', dt)()
-    c = argvsparser.parse_func('-c', 10)()
-    n = argvsparser.parse_func('-s', 0)()
-    e = argvsparser.parse_func('-e', False)()
+    d = parser.parse_func('-d', datetime.today())()
+    c = parser.parse_func('-c', 10)()
+    n = parser.parse_func('-s', 0)()
+    file_name = parser.parse_func('-f', 'EbbinghausPlan.xls')()
+    e = parser.parse_func('-e', False)()
 
     plans = ebbinghaus.getPlans(d, c, startNo=n, isToEnd=e)
 
@@ -165,4 +164,4 @@ if __name__ == "__main__":
         for k, planContent in enumerate(plan):
             worksheet.write(i + startOffset, k, planContent, style)
 
-    workbook.save('EbbinghausPlan.xls')
+    workbook.save(file_name)
