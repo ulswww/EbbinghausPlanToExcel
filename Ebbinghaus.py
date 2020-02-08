@@ -17,7 +17,7 @@ class Ebbinghaus(object):
     def __init__(self, cycles):
         self.cycles = cycles
 
-    def GetStudyPlan(self, day, studyCount, date):
+    def get_date_plan(self, day, studyCount, date):
 
         lastDay = studyCount
 
@@ -43,7 +43,7 @@ class Ebbinghaus(object):
 
         return (studiesForPlan, cycleCount == 0)
 
-    def getPlans(self, startDate, studyCount, startNo=1, isToEnd=False):
+    def get_plans(self, startDate, studyCount, startNo=1, isToEnd=False):
 
         plans = []
         lastCycle = self.cycles[-1]
@@ -63,7 +63,7 @@ class Ebbinghaus(object):
             if date.weekday() == 6:
                 date = date + timedelta(days=1)
                 plans.append(empty)
-            plan, isend = self.GetStudyPlan(i + 1 + startNo, studyCount, date)
+            plan, isend = self.get_date_plan(i + 1 + startNo, studyCount, date)
             date = date + timedelta(days=1)
             plans.append(plan)
 
@@ -82,37 +82,10 @@ class Stage(object):
     __repr__ = __str__
 
 
-if __name__ == "__main__":
-    ebbinghaus = Ebbinghaus([
-        Stage(5, "M"),
-        Stage(30, "M"),
-        Stage(12, "H"),
-        Stage(1, "d"),
-        Stage(2, "d"),
-        Stage(4, "d"),
-        Stage(7, "d"),
-        Stage(15, "d"),
-        Stage(1, "m"),
-        Stage(3, "m"),
-        Stage(6, "m")])
-
-    d = parser.parse_func('-d', datetime.today())()
-    c = parser.parse_func('-c', 10)()
-    n = parser.parse_func('-s', 0)()
-    file_name = parser.parse_func('-f', 'EbbinghausPlan.xls')()
-    e = parser.parse_func('-e', False)()
-
-    plans = ebbinghaus.getPlans(d, c, startNo=n, isToEnd=e)
-
-    # for plan in plans:
-    #     print(plan)
-
+def to_excel(plans, file_name):
     workbook = xlwt.Workbook()
-
     worksheet = workbook.add_sheet('工作表1')
-
     startOffset = 4
-
     borders = xlwt.Borders()
     # 细实线:1，小粗实线:2，细虚线:3，中细虚线:4，大粗实线:5，双线:6，细点虚线:7
     # 大粗虚线:8，细点划线:9，粗点划线:10，细双点划线:11，粗双点划线:12，斜点划线:13
@@ -165,3 +138,29 @@ if __name__ == "__main__":
             worksheet.write(i + startOffset, k, planContent, style)
 
     workbook.save(file_name)
+
+
+if __name__ == "__main__":
+
+    ebbinghaus = Ebbinghaus([
+                            Stage(5, "M"),
+                            Stage(30, "M"),
+                            Stage(12, "H"),
+                            Stage(1, "d"),
+                            Stage(2, "d"),
+                            Stage(4, "d"),
+                            Stage(7, "d"),
+                            Stage(15, "d"),
+                            Stage(1, "m"),
+                            Stage(3, "m"),
+                            Stage(6, "m")])
+
+    d = parser.parse_func('-d', datetime.today())()
+    c = parser.parse_func('-c', 10)()
+    n = parser.parse_func('-s', 0)()
+    file_name = parser.parse_func('-f', 'EbbinghausPlan.xls')()
+    e = parser.parse_func('-e', False)()
+
+    plans = ebbinghaus.get_plans(d, c, startNo=n, isToEnd=e)
+
+    to_excel(plans, file_name)
