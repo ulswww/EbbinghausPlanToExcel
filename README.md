@@ -1,2 +1,2 @@
 # EbbinghausPlanToExcel
-Need xlwt, xlrd module
+Need xlwt module
