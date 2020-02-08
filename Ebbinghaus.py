@@ -56,16 +56,23 @@ class Ebbinghaus(object):
         
         date = startDate
         
+        empty = []
+        empty.append('')
+        empty.append(date.strftime("休息"))
+        empty.append("")
+        for cycle in self.cycles:
+            empty.append('')
+        
         for i in range(studyCount+lastDays):
             
             if date.weekday() == 6:
                 date = date + timedelta(days = 1) 
-                empty = []
-                empty.append('')
-                empty.append(date.strftime("%Y-%m-%d"))
-                empty.append("")
-                for cycle in self.cycles:
-                    empty.append('')
+                # empty = []
+                # empty.append('')
+                # empty.append(date.strftime("%Y-%m-%d"))
+                # empty.append("")
+                # for cycle in self.cycles:
+                #     empty.append('')
                 plans.append(empty)
             
             plan, isend = self.GetStudyPlan(i +1 + startNo, studyCount, date)
@@ -115,10 +122,6 @@ if __name__ == "__main__":
     
     # for plan in plans:
     #     print(plan)
-        
-    # pass
-    
-
     
     workbook = xlwt.Workbook()
 
@@ -169,11 +172,11 @@ if __name__ == "__main__":
     
     worksheet.set_panes_frozen(True)
     worksheet.set_horz_split_pos(4) 
-    # worksheet.set_vert_split_pos(13) 
+    # worksheet.set_vert_split_pos(1) 
     
-    for index, plan in enumerate(plans):
+    for i, plan in enumerate(plans):
         for k, planContent in enumerate(plan):
-            worksheet.write(index + startOffset, k, planContent, style)
+            worksheet.write(i + startOffset, k, planContent, style)
             
     
 
