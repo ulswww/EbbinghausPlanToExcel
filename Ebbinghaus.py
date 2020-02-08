@@ -1,6 +1,53 @@
-# import sys
+import sys
 from datetime import datetime, timedelta
+import functools
 import xlwt
+
+
+argv = sys.argv[1:]
+
+
+def get_arg_value(type):
+    argv_len = len(argv)
+    index = argv.index(type) if type in argv else -1
+    if index < 0 or index >= argv_len - 1:
+        return None
+    else:
+        value = argv[index+1]
+        return value
+
+
+def parse_date(value, default):
+    if not value:
+        return default
+    else:
+        return datetime.strptime(value, '%Y-%m-%d')
+
+
+def parse_int(value, default):
+    if not value:
+        return default
+    else:
+        return int(value)
+
+
+def parse_boolean(value, default):
+    if not value:
+        return default
+    else:
+        return bool(value)
+
+
+def parse_func(type, default):
+    valuestr = get_arg_value(type)
+    getterfunc = argv_getter.get(type)
+    return functools.partial(getterfunc, value=valuestr, default=default)
+
+
+argv_getter = {'-d': parse_date,
+               '-c': parse_int,
+               '-n': parse_int,
+               '-e': parse_boolean}
 
 
 def parseDays(value, type):
@@ -44,6 +91,7 @@ class Ebbinghaus(object):
         return (studiesForPlan, cycleCount == 0)
 
     def getPlans(self, startDate, studyCount, startNo=1, isToEnd=False):
+
         plans = []
         lastCycle = self.cycles[-1]
         lastDays = parseDays(lastCycle.value, lastCycle.type) if isToEnd else 0
@@ -53,8 +101,10 @@ class Ebbinghaus(object):
         empty.append('')
         empty.append(date.strftime("休息"))
         empty.append("")
+
         for cycle in self.cycles:
             empty.append('')
+
         for i in range(studyCount+lastDays):
 
             if date.weekday() == 6:
@@ -97,7 +147,15 @@ if __name__ == "__main__":
 
     dt = datetime.today()
 
-    plans = ebbinghaus.getPlans(dt, 100, isToEnd=False)
+    d = parse_func('-d', dt)()
+
+    c = parse_func('-c', 10)()
+
+    n = parse_func('-n', 0)()
+
+    e = parse_func('-e', False)()
+
+    plans = ebbinghaus.getPlans(d, c, startNo=n, isToEnd=e)
 
     # for plan in plans:
     #     print(plan)
