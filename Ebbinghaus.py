@@ -1,53 +1,6 @@
-import sys
 from datetime import datetime, timedelta
-import functools
 import xlwt
-
-
-argv = sys.argv[1:]
-
-
-def get_arg_value(type):
-    argv_len = len(argv)
-    index = argv.index(type) if type in argv else -1
-    if index < 0 or index >= argv_len - 1:
-        return None
-    else:
-        value = argv[index+1]
-        return value
-
-
-def parse_date(value, default):
-    if not value:
-        return default
-    else:
-        return datetime.strptime(value, '%Y-%m-%d')
-
-
-def parse_int(value, default):
-    if not value:
-        return default
-    else:
-        return int(value)
-
-
-def parse_boolean(value, default):
-    if not value:
-        return default
-    else:
-        return bool(value)
-
-
-def parse_func(type, default):
-    valuestr = get_arg_value(type)
-    getterfunc = argv_getter.get(type)
-    return functools.partial(getterfunc, value=valuestr, default=default)
-
-
-argv_getter = {'-d': parse_date,
-               '-c': parse_int,
-               '-s': parse_int,
-               '-e': parse_boolean}
+import argvsparser
 
 
 def parseDays(value, type):
@@ -112,8 +65,7 @@ class Ebbinghaus(object):
                 plans.append(empty)
             plan, isend = self.GetStudyPlan(i + 1 + startNo, studyCount, date)
             date = date + timedelta(days=1)
-            if not isend:
-                plans.append(plan)
+            plans.append(plan)
 
         return plans
 
@@ -146,14 +98,10 @@ if __name__ == "__main__":
                  ])
 
     dt = datetime.today()
-
-    d = parse_func('-d', dt)()
-
-    c = parse_func('-c', 10)()
-
-    n = parse_func('-s', 0)()
-
-    e = parse_func('-e', False)()
+    d = argvsparser.parse_func('-d', dt)()
+    c = argvsparser.parse_func('-c', 10)()
+    n = argvsparser.parse_func('-s', 0)()
+    e = argvsparser.parse_func('-e', False)()
 
     plans = ebbinghaus.getPlans(d, c, startNo=n, isToEnd=e)
 
