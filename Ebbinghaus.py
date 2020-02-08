@@ -46,7 +46,7 @@ def parse_func(type, default):
 
 argv_getter = {'-d': parse_date,
                '-c': parse_int,
-               '-n': parse_int,
+               '-s': parse_int,
                '-e': parse_boolean}
 
 
@@ -151,7 +151,7 @@ if __name__ == "__main__":
 
     c = parse_func('-c', 10)()
 
-    n = parse_func('-n', 0)()
+    n = parse_func('-s', 0)()
 
     e = parse_func('-e', False)()
 
