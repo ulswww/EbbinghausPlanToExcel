@@ -30,6 +30,13 @@ def parse_int(value, default):
         return int(value)
 
 
+def parse_str(value, default):
+    if not value:
+        return default
+    else:
+        return value
+
+
 def parse_boolean(value, default):
     if not value:
         return default
@@ -46,4 +53,5 @@ def parse_func(type, default):
 argv_getter = {'-d': parse_date,
                '-c': parse_int,
                '-s': parse_int,
+               '-f': parse_str,
                '-e': parse_boolean}
