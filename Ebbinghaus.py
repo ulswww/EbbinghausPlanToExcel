@@ -167,9 +167,15 @@ if __name__ == "__main__":
     worksheet.write(3,12,'3  个月',style)
     worksheet.write(3,13,'6  个月',style)
     
+    worksheet.set_panes_frozen(True)
+    worksheet.set_horz_split_pos(4) 
+    # worksheet.set_vert_split_pos(13) 
+    
     for index, plan in enumerate(plans):
         for k, planContent in enumerate(plan):
-            worksheet.write(index + startOffset, k, planContent, tyle)
+            worksheet.write(index + startOffset, k, planContent, style)
+            
+    
 
 
     workbook.save('EbbinghausPlan.xls')
