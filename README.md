@@ -7,3 +7,5 @@ py Ebbinghaus.py -d 2019-9-9 -c 100 -s 0 -e False
 * -c:学习数量
 * -s:开始偏移量
 * -e:是否直到学习的最后一日
+* --use_empty_date:使用空日期
+* --use_holiday:星期日休息
