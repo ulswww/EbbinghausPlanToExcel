@@ -17,7 +17,7 @@ class Ebbinghaus(object):
     def __init__(self, cycles):
         self.cycles = cycles
 
-    def get_date_plan(self, day, studyCount, date):
+    def get_date_plan(self, day, studyCount, date, use_empty_date):
 
         lastDay = studyCount
 
@@ -25,7 +25,10 @@ class Ebbinghaus(object):
 
         studiesForPlan.append(day)
 
-        studiesForPlan.append(date.strftime("%Y-%m-%d"))
+        if not use_empty_date:
+            studiesForPlan.append(date.strftime("%Y-%m-%d"))
+        else:
+            studiesForPlan.append('    年  月  日')
 
         studiesForPlan.append('')
 
@@ -43,11 +46,16 @@ class Ebbinghaus(object):
 
         return (studiesForPlan, cycleCount == 0)
 
-    def get_plans(self, startDate, studyCount, startNo=1, isToEnd=False):
+    def get_plans(self, startDate, studyCount, startNo=1, isToEnd=False,
+                  use_empty_date=False,
+                  use_holiday=False):
 
         plans = []
         lastCycle = self.cycles[-1]
         lastDays = parseDays(lastCycle.value, lastCycle.type) if isToEnd else 0
+
+        if use_empty_date:
+            lastDays = 0
         # startNo = 1
         date = startDate
         empty = []
@@ -60,10 +68,11 @@ class Ebbinghaus(object):
 
         for i in range(studyCount+lastDays):
 
-            if date.weekday() == 6:
+            if date.weekday() == 6 and not use_empty_date and use_holiday:
                 date = date + timedelta(days=1)
                 plans.append(empty)
-            plan, isend = self.get_date_plan(i + 1 + startNo, studyCount, date)
+            plan, isend = self.get_date_plan(i + 1 + startNo, studyCount, date,
+                                             use_empty_date)
             date = date + timedelta(days=1)
             plans.append(plan)
 
@@ -156,11 +165,15 @@ if __name__ == "__main__":
                             Stage(6, "m")])
 
     d = parser.parse_func('-d', datetime.today())()
-    c = parser.parse_func('-c', 10)()
+    c = parser.parse_func('-c', 365)()
     n = parser.parse_func('-s', 0)()
     file_name = parser.parse_func('-f', 'EbbinghausPlan.xls')()
     e = parser.parse_func('-e', False)()
+    use_empty_date = parser.parse_func('--use_empty_date', False, True)()
+    use_holiday = parser.parse_func('--use_holiday', False, True)()
 
-    plans = ebbinghaus.get_plans(d, c, startNo=n, isToEnd=e)
+    plans = ebbinghaus.get_plans(d, c, startNo=n, isToEnd=e,
+                                 use_empty_date=use_empty_date,
+                                 use_holiday=use_holiday)
 
     to_excel(plans, file_name)
