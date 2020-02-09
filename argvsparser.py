@@ -7,13 +7,20 @@ argv = sys.argv[1:]
 
 
 def get_arg_value(type):
+
     argv_len = len(argv)
+
     index = argv.index(type) if type in argv else -1
+
     if index < 0 or index >= argv_len - 1:
         return None
     else:
         value = argv[index+1]
         return value
+
+
+def get_lable_value(type):
+    return type in argv
 
 
 def parse_date(value, default):
@@ -44,7 +51,16 @@ def parse_boolean(value, default):
         return bool(value)
 
 
-def parse_func(type, default):
+def parse_func(type, default, islabel=False):
+    if islabel:
+        exists = get_lable_value(type)
+        if exists:
+            return functools.partial(parse_boolean, value='True',
+                                     default=default)
+        else:
+            return functools.partial(parse_boolean, value=default,
+                                     default=default)
+
     valuestr = get_arg_value(type)
     getterfunc = argv_getter.get(type)
     return functools.partial(getterfunc, value=valuestr, default=default)
@@ -53,5 +69,6 @@ def parse_func(type, default):
 argv_getter = {'-d': parse_date,
                '-c': parse_int,
                '-s': parse_int,
+               '-f': parse_str,
                '-f': parse_str,
                '-e': parse_boolean}
